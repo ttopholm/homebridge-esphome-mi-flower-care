@@ -16,12 +16,6 @@
                 "required": true,
                 "description": "The baseurl for the esp32, including port. and no trailing /"
             },
-            "reverse": {
-                "title": "Reverse",
-                "type": "boolean",
-                "default": false,
-                "description": "The switch's default state is on."
-            },
             "temperature_id": {
                 "title": "Temperature Id",
                 "type": "string",
