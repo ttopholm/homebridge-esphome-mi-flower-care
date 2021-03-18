@@ -29,7 +29,7 @@ function EsphomeMiFlowerCare(log, config) {
 
 EsphomeMiFlowerCare.prototype = {
 
-    httpRequest: function (url, body, callback) {
+    httpRequest: function (url, callback) {
         (async () => {
             try {
                 const response = await got(url);
@@ -38,16 +38,12 @@ EsphomeMiFlowerCare.prototype = {
                 callback(error, error.response, error.response.body)    
             }
         })();
-
-
-
-
     },
 
     request: function (sensor_id, callback) {
         let url = this.url + "/sensor/" + sensor_id
         this.log(url)
-        this.httpRequest(url, "", this.http_method, this.username, this.password, this.sendimmediately, function (error, response, responseBody) {
+        this.httpRequest(url, function (error, response, responseBody) {
 
             if (error) {
                 this.log('Get Temperature failed: %s', error.message);
