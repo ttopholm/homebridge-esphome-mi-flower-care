@@ -12,7 +12,6 @@ function EsphomeMiFlowerCare(log, config) {
 
     // Config
     this.url = config["url"];
-    this.http_method = config["http_method"] || "GET";
 
     this.name = config["name"];
     this.temperature_id = config["temperature_id"] || false;
