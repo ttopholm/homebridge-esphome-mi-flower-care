@@ -43,7 +43,7 @@
     {
       "accessory": "EsphomeMiFlowerCare",
       "name": "Temperature",
-      "url": "http://192.168.178.210/sesnor/xiomi_sensor_temperature"
+      "url": "http://192.168.178.210/sesnor/xiomi_sensor_temperature",
       "type": "temperature"
     }
   ]

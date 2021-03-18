@@ -27,7 +27,7 @@ function EsphomeMiFlowerCare(log, config) {
 
 }
 
-AdvancedHttpTemperatureHumidity.prototype = {
+EsphomeMiFlowerCare.prototype = {
 
     httpRequest: function (url, body, method, username, password, sendimmediately, callback) {
         request({
@@ -44,10 +44,6 @@ AdvancedHttpTemperatureHumidity.prototype = {
             function (error, response, body) {
                 callback(error, response, body)
             })
-    },
-
-    getStateHumidity: function (callback) {
-        callback(null, this.humidity);
     },
 
     request: function (callback) {
