@@ -62,8 +62,17 @@ EsphomeMiFlowerCare.prototype = {
                 this.log('Get Temperature succeeded!');
                 this.log(responseBody)
                 var info = JSON.parse(responseBody);
-
-                var temperature = parseFloat(info.value);
+                if (isNaN(info.value)) {
+                    var temperature = this.values[sensor_id]
+                    if (isNaN(temperature)) {
+                        temperature = 0;
+                        this.values[sensor_id] = 0;
+                    }
+                } else {
+                    var temperature = parseFloat(info.value);
+                    this.values[sensor_id] = temperature;
+                }
+                
 
                 callback(null, temperature);
             }
