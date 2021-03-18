@@ -95,7 +95,7 @@ EsphomeMiFlowerCare.prototype = {
         }
 
         if (this.moisture_id) {
-            this.humidityService = new Service.HumiditySensor(this.name + + "_humidity");
+            this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
             this.humidityService
                 .getCharacteristic(Characteristic.CurrentRelativeHumidity)
                 .setProps({minValue: 0, maxValue: 100})
@@ -107,16 +107,16 @@ EsphomeMiFlowerCare.prototype = {
             this.lightSensor = new Service.LightSensor(this.name + "_illuminance");
             this.lightSensor
                 .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                .setProps({minValue: 0, maxValue: 100000000})
+                .setProps({minValue: 0, maxValue: 140000})
                 .on('get', this.request.bind(this, this.illuminance_id));
             services.push(this.lightSensor);
         }
 
         if (this.soil_conductivity_id) {
-            this.lightSensor = new Service.LightSensor(this.name + + "_soil_conductivity");
+            this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity");
             this.lightSensor
                 .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                .setProps({minValue: 0, maxValue: 100000000})
+                .setProps({minValue: 0, maxValue: 6000})
                 .on('get', this.request.bind(this, this.soil_conductivity_id));
             services.push(this.lightSensor);
         }
