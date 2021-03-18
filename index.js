@@ -51,13 +51,16 @@ EsphomeMiFlowerCare.prototype = {
     },
 
     request: function (callback, sensor_id) {
-        this.httpRequest(this.url + "/sensor/" + sensor_id, "", this.http_method, this.username, this.password, this.sendimmediately, function (error, response, responseBody) {
+        let url = this.url + "/sensor/" + sensor_id
+        this.log(url)
+        this.httpRequest(url, "", this.http_method, this.username, this.password, this.sendimmediately, function (error, response, responseBody) {
 
             if (error) {
                 this.log('Get Temperature failed: %s', error.message);
                 callback(error);
             } else {
                 this.log('Get Temperature succeeded!');
+                this.log(responseBody)
                 var info = JSON.parse(responseBody);
 
                 var temperature = parseFloat(info.value);
