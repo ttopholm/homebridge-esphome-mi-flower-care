@@ -27,7 +27,7 @@ function EsphomeMiFlowerCare(log, config) {
     this.manufacturer = config["manufacturer"] || "EsphomeMiFlowerCare";
     this.model = config["model"] || "Default";
     this.serial = config["serial"] || "18981898";
-
+    this.internal_values = {};
 
 }
 
@@ -63,14 +63,14 @@ EsphomeMiFlowerCare.prototype = {
                 this.log(responseBody)
                 var info = JSON.parse(responseBody);
                 if (isNaN(info.value)) {
-                    var temperature = this.values[sensor_id]
+                    var temperature = this.internal_values[sensor_id]
                     if (isNaN(temperature)) {
                         temperature = 0;
-                        this.values[sensor_id] = 0;
+                        this.internal_values[sensor_id] = 0;
                     }
                 } else {
                     var temperature = parseFloat(info.value);
-                    this.values[sensor_id] = temperature;
+                    this.internal_values[sensor_id] = temperature;
                 }
                 
 
