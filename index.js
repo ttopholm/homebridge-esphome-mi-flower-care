@@ -19,11 +19,15 @@ function EsphomeMiFlowerCare(log, config) {
     this.password = config["password"] || "";
 
     this.name = config["name"];
-    this.type = config["type"];
+    this.temperature_id = config["temperature_id"] || false;
+    this.moisture_id = config["moisture_id"] || false;
+    this.illuminance_id = config["illuminance_id"] || false;
+    this.soil_conductivity_id = config["soil_conductivity_id"] || false;
 
     this.manufacturer = config["manufacturer"] || "EsphomeMiFlowerCare";
     this.model = config["model"] || "Default";
     this.serial = config["serial"] || "18981898";
+
 
 }
 
@@ -46,8 +50,8 @@ EsphomeMiFlowerCare.prototype = {
             })
     },
 
-    request: function (callback) {
-        this.httpRequest(this.url, "", this.http_method, this.username, this.password, this.sendimmediately, function (error, response, responseBody) {
+    getStateTemperature: function (callback, sensor_id) {
+        this.httpRequest(this.url + "/sensor/" + sensor_id, "", this.http_method, this.username, this.password, this.sendimmediately, function (error, response, responseBody) {
 
             if (error) {
                 this.log('Get Temperature failed: %s', error.message);
@@ -67,7 +71,7 @@ EsphomeMiFlowerCare.prototype = {
         this.log("Identify requested!");
         callback(); // success
     },
-
+   
     getServices: function () {
         var services = [],
             informationService = new Service.AccessoryInformation();
@@ -78,33 +82,47 @@ EsphomeMiFlowerCare.prototype = {
             .setCharacteristic(Characteristic.SerialNumber, this.serial);
         services.push(informationService);
 
-        switch(this.type) {
-
-            case 'temperature':
-                temperatureService = new Service.TemperatureSensor(this.name);
-                temperatureService
-                    .getCharacteristic(Characteristic.CurrentTemperature)
-                    .on('get', this.request.bind(this));
-                services.push(temperatureService);
-                break;
-            case 'humidity':
-                this.humidityService = new Service.HumiditySensor(this.name);
-                this.humidityService
-                    .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                    .setProps({minValue: 0, maxValue: 100})
-                    .on('get', this.request.bind(this));
-                services.push(this.humidityService);
-                break;
-            case 'lux':
-                this.lightSensor = new Service.LightSensor(this.name);
-                this.lightSensor
-                    .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                    .setProps({minValue: 0, maxValue: 100000000})
-                    .on('get', this.request.bind(this));
-                services.push(this.lightSensor);
-                break;
-                
+ 
+        if (this.temperature_id) {
+            temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
+            temperatureService
+                .getCharacteristic(Characteristic.CurrentTemperature)
+                .on('get', this.request.bind(this, this.temperature_id));
+            services.push(temperatureService);
         }
+
+        if (this.moisture_id) {
+            this.humidityService = new Service.HumiditySensor(this.name + + "_humidity");
+            this.humidityService
+                .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                .setProps({minValue: 0, maxValue: 100})
+                .on('get', this.request.bind(this, this.moisture_id));
+            services.push(this.humidityService);
+        }
+
+        if (this.illuminance_id) {
+            this.lightSensor = new Service.LightSensor(this.name + "_illuminance");
+            this.lightSensor
+                .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                .setProps({minValue: 0, maxValue: 100000000})
+                .on('get', this.request.bind(this, this.illuminance_id));
+            services.push(this.lightSensor);
+        }
+
+        if (this.soil_conductivity_id) {
+            this.lightSensor = new Service.LightSensor(this.name + + "_soil_conductivity");
+            this.lightSensor
+                .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                .setProps({minValue: 0, maxValue: 100000000})
+                .on('get', this.request.bind(this, this.soil_conductivity_id));
+            services.push(this.lightSensor);
+        }
+
+
+
+
+                
+        
         return services;
     }
 };
