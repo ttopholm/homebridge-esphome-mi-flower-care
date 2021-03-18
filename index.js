@@ -113,7 +113,7 @@ EsphomeMiFlowerCare.prototype = {
         }
 
         if (this.soil_conductivity_id) {
-            this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity");
+            this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
             this.lightSensor
                 .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
                 .setProps({minValue: 0, maxValue: 6000})
