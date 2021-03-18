@@ -1,0 +1,47 @@
+{
+    "pluginAlias": "EsphomeMiFlowerCare",
+    "pluginType": "accessory",
+    "singular": false,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "title": "Name",
+                "type": "string",
+                "required": true
+            },
+            "url": {
+                "title": "Base url",
+                "type": "string",
+                "required": true,
+                "description": "The baseurl for the esp32, including port. and no trailing /"
+            },
+            "reverse": {
+                "title": "Reverse",
+                "type": "boolean",
+                "default": false,
+                "description": "The switch's default state is on."
+            },
+            "temperature_id": {
+                "title": "Temperature Id",
+                "type": "string",
+                "description": "The id refers to the id of the component - this ID is created by taking the name of the component, stripping out all non-alphanumeric characters, making everything lowercase and replacing all spaces by underscores."
+            },
+            "moisture_id": {
+                "title": "Moisture Id",
+                "type": "string",
+                "description": "The id refers to the id of the component - this ID is created by taking the name of the component, stripping out all non-alphanumeric characters, making everything lowercase and replacing all spaces by underscores."
+            },
+            "illuminance_id": {
+                "title": "Illuminance Id",
+                "type": "string",
+                "description": "The id refers to the id of the component - this ID is created by taking the name of the component, stripping out all non-alphanumeric characters, making everything lowercase and replacing all spaces by underscores."
+            },
+            "soil_conductivity_id": {
+                "title": "Soil conductivity Id",
+                "type": "string",
+                "description": "The id refers to the id of the component - this ID is created by taking the name of the component, stripping out all non-alphanumeric characters, making everything lowercase and replacing all spaces by underscores."
+            }
+        }
+    }
+}
