@@ -24,6 +24,6 @@
     "homebridge": ">=0.2.0"
   },
   "dependencies": {
-    "request": "^2.65.0"
+    "homebridge-http-base": "~2.1.11"
   }
 }
