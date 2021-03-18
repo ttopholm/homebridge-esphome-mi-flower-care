@@ -1,6 +1,5 @@
 var Service, Characteristic;
-const _http_base = require("homebridge-http-base");
-const http = _http_base.http;
+var got = require('got');
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
@@ -31,39 +30,15 @@ function EsphomeMiFlowerCare(log, config) {
 EsphomeMiFlowerCare.prototype = {
 
     httpRequest: function (url, body, callback) {
-        request({
-                url: url,
-                body: body,
-                method: method,
-                rejectUnauthorized: false,
-                auth: {
-                    user: username,
-                    pass: password,
-                    sendImmediately: sendimmediately
-                }
-            },
-            function (error, response, body) {
-                callback(error, response, body)
-            })
-            http.httpRequest(this.status, (error, response, body) => {
-                if (error) {
-                    this.log("getStatus() failed: %s", error.message);
-                    callback(error, response, body)
-                }
-                else if (!(http.isHttpSuccessCode(response.statusCode) || http.isHttpRedirectCode(response.statusCode))) {
-                    this.log("getStatus() http request returned http error code: %s", response.statusCode);
-                    callback(new Error("Got html error code " + response.statusCode), response, body);
-                }
-                else {
-                    if (this.debug)
-                        this.log(`getStatus() request returned successfully (${response.statusCode}). Body: '${body}'`);
+        (async () => {
+            try {
+                const response = await got(url);
+                callback(null, response, response.body)
+            } catch (error) {
+                callback(error, error.response, error.response.body)    
+            }
+        })();
 
-                    if (http.isHttpRedirectCode(response.statusCode)) {
-                        this.log("getStatus() http request return with redirect status code (3xx). Accepting it anyways");
-                    }
-                    callback(error, response, body)
-                }
-            });
 
 
 
