@@ -50,7 +50,7 @@ EsphomeMiFlowerCare.prototype = {
             })
     },
 
-    getStateTemperature: function (callback, sensor_id) {
+    request: function (callback, sensor_id) {
         this.httpRequest(this.url + "/sensor/" + sensor_id, "", this.http_method, this.username, this.password, this.sendimmediately, function (error, response, responseBody) {
 
             if (error) {
