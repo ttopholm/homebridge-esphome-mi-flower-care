@@ -51,6 +51,8 @@ EsphomeMiFlowerCare.prototype = {
     },
 
     request: function (callback, sensor_id) {
+        this.log(callback)
+        this.log(sensor_id)
         let url = this.url + "/sensor/" + sensor_id
         this.log(url)
         this.httpRequest(url, "", this.http_method, this.username, this.password, this.sendimmediately, function (error, response, responseBody) {
