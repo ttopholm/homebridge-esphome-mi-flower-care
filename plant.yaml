@@ -1,0 +1,37 @@
+esphome:
+  name: plant
+  platform: ESP32
+  board: wemos_d1_mini32
+
+wifi:
+  ssid: "###SSID###"
+  password: "###PASSWORD###"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Plant Fallback Hotspot"
+    password: "###RANDOM_PASSWOR###"
+
+captive_portal:
+
+# Enable REST API on PORT 80
+web_server:
+  port: 80
+ 
+# Enable OTA
+ota:
+
+esp32_ble_tracker:
+sensor:
+  - platform: xiaomi_hhccjcy01
+    mac_address: "###MAC_ADDRESS###"
+    temperature:
+      name: "Xiaomi HHCCJCY01 Temperature"
+    moisture:
+      name: "Xiaomi HHCCJCY01 Moisture"
+    illuminance:
+      name: "Xiaomi HHCCJCY01 Illuminance"
+    conductivity:
+      name: "Xiaomi HHCCJCY01 Soil Conductivity"
+    battery_level:
+      name: "Xiaomi HHCCJCY01 Battery Level"
