@@ -130,7 +130,9 @@ EsphomeMiFlowerCare.prototype = {
         this.log("Identify requested!");
         callback(); // success
     },
-   
+    get_dummy: function () {
+        this.log("Get dummy!");
+    },
     getServices: function () {
         var services = [],
             informationService = new Service.AccessoryInformation();
@@ -177,9 +179,8 @@ EsphomeMiFlowerCare.prototype = {
             services.push(this.lightSensor);
         }
 
-
-
-
+        if (this.plant_name)
+            this.get_dummy.bind();
                 
         
         return services;
