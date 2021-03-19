@@ -180,9 +180,10 @@ EsphomeMiFlowerCare.prototype = {
             services.push(this.lightSensor);
         }
 
-        if (this.plant_name)
-            this.get_dummy.bind(this);
-                
+
+        this.get_dummy.bind(this);
+        this.get_dummy(this);
+        
         
         return services;
     }
