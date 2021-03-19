@@ -18,17 +18,28 @@ function EsphomeMiFlowerCare(log, config) {
     this.moisture_id = config["moisture_id"] || false;
     this.illuminance_id = config["illuminance_id"] || false;
     this.soil_conductivity_id = config["soil_conductivity_id"] || false;
+    this.plant_name = config["plant_name"] || false;
 
     this.manufacturer = config["manufacturer"] || "EsphomeMiFlowerCare";
     this.model = config["model"] || "Default";
     this.serial = config["serial"] || "18981898";
     this.internal_values = {};
+    
+    //default min max values
+    this.temperature_max = config["temperature_max"] || 200;
+    this.temperature_min = config["temperature_min"] || 0;
+    this.moisture_max = config["moisture_max"] || 100;
+    this.moisture_min = config["moisture_min"] || 0;
+    this.illuminance_max = config["illuminance_max"] || 1000000;
+    this.illuminance_min = config["illuminance_min"] || 0;
+    this.soil_conductivity_max = config["soil_conductivity_max"] || 1000000;
+    this.soil_conductivity_min = config["soil_conductivity_min"] || 0;
 
 }
 
 EsphomeMiFlowerCare.prototype = {
 
-    httpRequest: function (url, callback) {
+    http_get_request: function (url, callback) {
         (async () => {
             try {
                 const response = await got(url);
@@ -38,11 +49,19 @@ EsphomeMiFlowerCare.prototype = {
             }
         })();
     },
-
+    http_post_request: function (url,, body, callback) {
+        (async () => {
+            try {
+                const response = await got(url);
+                callback(null, response, response.body)
+            } catch (error) {
+                callback(error, error.response, error.response.body)    
+            }
+        })();
+    },
     request: function (sensor_id, callback) {
         let url = this.url + "/sensor/" + sensor_id
-        this.log(url)
-        this.httpRequest(url, function (error, response, responseBody) {
+        this.http_get_request(url, function (error, response, responseBody) {
 
             if (error) {
                 this.log('Get Temperature failed: %s', error.message);
@@ -67,6 +86,40 @@ EsphomeMiFlowerCare.prototype = {
             }
         }.bind(this));
     },
+    get_plant_info: function(callback) {
+        let url = "https://eu-api.huahuacaocao.net/api/v2";
+        body = {
+            "path":"/plant/detail",
+            "data": {
+                "lang":"en",
+                "pid": this.plant_name.toLowerCase()
+            },
+            "method":"GET",
+            "service":"pkb"
+        }
+        this.http_post_request(url, body, function (error, response, responseBody) {
+            if (error) {
+                this.log('Get plant info failed: %s', error.message);
+                callback(error);                
+            } else {
+                body = JSON.parse(responseBody)
+
+                if (body.data.basic.origin == "") {
+                this.log('Plant not found: %s', this.plant_name);
+                callback();                     
+                } else {
+                    this.temperature_max = parseFloat(body.data.parameter.max_temp);
+                    this.temperature_min = parseFloat(body.data.parameter.min_temp);
+                    this.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
+                    this.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
+                    this.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
+                    this.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
+                    this.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
+                    this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
+                }
+            }
+        });
+    },
 
     identify: function (callback) {
         this.log("Identify requested!");
@@ -82,12 +135,14 @@ EsphomeMiFlowerCare.prototype = {
             .setCharacteristic(Characteristic.Model, this.model)
             .setCharacteristic(Characteristic.SerialNumber, this.serial);
         services.push(informationService);
-
+        if (this.plant_name)
+            get_plant_info();
  
         if (this.temperature_id) {
             temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
             temperatureService
                 .getCharacteristic(Characteristic.CurrentTemperature)
+                .setProps({minValue: this.temperature_min, maxValue: this.temperature_max})
                 .on('get', this.request.bind(this, this.temperature_id));
             services.push(temperatureService);
         }
@@ -96,7 +151,7 @@ EsphomeMiFlowerCare.prototype = {
             this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
             this.humidityService
                 .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                .setProps({minValue: 0, maxValue: 100})
+                .setProps({minValue: this.moisture_min, maxValue: this.moisture_max})
                 .on('get', this.request.bind(this, this.moisture_id));
             services.push(this.humidityService);
         }
@@ -105,7 +160,7 @@ EsphomeMiFlowerCare.prototype = {
             this.lightSensor = new Service.LightSensor(this.name + "_illuminance");
             this.lightSensor
                 .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                .setProps({minValue: 0, maxValue: 140000})
+                .setProps({minValue: this.illuminance_min, maxValue: this.illuminance_max})
                 .on('get', this.request.bind(this, this.illuminance_id));
             services.push(this.lightSensor);
         }
@@ -114,7 +169,7 @@ EsphomeMiFlowerCare.prototype = {
             this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
             this.lightSensor
                 .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                .setProps({minValue: 0, maxValue: 6000})
+                .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
                 .on('get', this.request.bind(this, this.soil_conductivity_id));
             services.push(this.lightSensor);
         }
