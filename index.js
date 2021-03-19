@@ -140,42 +140,43 @@ EsphomeMiFlowerCare.prototype = {
 
 
         if (this.plant_name) {
+            var _this = this
             this.get_plant_info(function() {
-                if (this.temperature_id) {
-                        temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
-                        temperatureService
-                            .getCharacteristic(Characteristic.CurrentTemperature)
-                            .setProps({minValue: this.temperature_min, maxValue: this.temperature_max})
-                            .on('get', this.request.bind(this, this.temperature_id));
-                        services.push(temperatureService);
-                    }
+                if (_this.temperature_id) {
+                    temperatureService = new Service.TemperatureSensor(_this.name + "_temperature");
+                    temperatureService
+                        .getCharacteristic(Characteristic.CurrentTemperature)
+                        .setProps({minValue: _this.temperature_min, maxValue: _this.temperature_max})
+                        .on('get', _this.request.bind(_this, _this.temperature_id));
+                    services.push(temperatureService);
+                }
 
-                    if (this.moisture_id) {
-                        this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
-                        this.humidityService
-                            .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                            .setProps({minValue: this.moisture_min, maxValue: this.moisture_max})
-                            .on('get', this.request.bind(this, this.moisture_id));
-                        services.push(this.humidityService);
-                    }
+                if (_this.moisture_id) {
+                    _this.humidityService = new Service.HumiditySensor(_this.name + "_humidity");
+                    _this.humidityService
+                        .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                        .setProps({minValue: _this.moisture_min, maxValue: _this.moisture_max})
+                        .on('get', _this.request.bind(_this, _this.moisture_id));
+                    services.push(_this.humidityService);
+                }
 
-                    if (this.illuminance_id) {
-                        this.lightSensor = new Service.LightSensor(this.name + "_illuminance");
-                        this.lightSensor
-                            .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                            .setProps({minValue: this.illuminance_min, maxValue: this.illuminance_max})
-                            .on('get', this.request.bind(this, this.illuminance_id));
-                        services.push(this.lightSensor);
-                    }
+                if (_this.illuminance_id) {
+                    _this.lightSensor = new Service.LightSensor(_this.name + "_illuminance", _this.name + "_illuminance");
+                    _this.lightSensor
+                        .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                        .setProps({minValue: _this.illuminance_min, maxValue: _this.illuminance_max})
+                        .on('get', _this.request.bind(_this, _this.illuminance_id));
+                    services.push(_this.lightSensor);
+                }
 
-                    if (this.soil_conductivity_id) {
-                        this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
-                        this.lightSensor
-                            .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                            .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
-                            .on('get', this.request.bind(this, this.soil_conductivity_id));
-                        services.push(this.lightSensor);
-                    }
+                if (_this.soil_conductivity_id) {
+                    _this.lightSensor = new Service.LightSensor(_this.name + "_soil_conductivity",_this.name + "_soil_conductivity");
+                    _this.lightSensor
+                        .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                        .setProps({minValue: _this.soil_conductivity_min, maxValue: _this.soil_conductivity_max})
+                        .on('get', _this.request.bind(_this, _this.soil_conductivity_id));
+                    services.push(_this.lightSensor);
+                }
             });
         } else {
             if (this.temperature_id) {
@@ -185,44 +186,36 @@ EsphomeMiFlowerCare.prototype = {
                         .setProps({minValue: this.temperature_min, maxValue: this.temperature_max})
                         .on('get', this.request.bind(this, this.temperature_id));
                     services.push(temperatureService);
-                }
+            }
 
-                if (this.moisture_id) {
-                    this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
-                    this.humidityService
-                        .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                        .setProps({minValue: this.moisture_min, maxValue: this.moisture_max})
-                        .on('get', this.request.bind(this, this.moisture_id));
-                    services.push(this.humidityService);
-                }
+            if (this.moisture_id) {
+                this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
+                this.humidityService
+                    .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                    .setProps({minValue: this.moisture_min, maxValue: this.moisture_max})
+                    .on('get', this.request.bind(this, this.moisture_id));
+                services.push(this.humidityService);
+            }
 
-                if (this.illuminance_id) {
-                    this.lightSensor = new Service.LightSensor(this.name + "_illuminance");
-                    this.lightSensor
-                        .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                        .setProps({minValue: this.illuminance_min, maxValue: this.illuminance_max})
-                        .on('get', this.request.bind(this, this.illuminance_id));
-                    services.push(this.lightSensor);
-                }
+            if (this.illuminance_id) {
+                this.lightSensor = new Service.LightSensor(this.name + "_illuminance");
+                this.lightSensor
+                    .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                    .setProps({minValue: this.illuminance_min, maxValue: this.illuminance_max})
+                    .on('get', this.request.bind(this, this.illuminance_id));
+                services.push(this.lightSensor);
+            }
 
-                if (this.soil_conductivity_id) {
-                    this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
-                    this.lightSensor
-                        .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                        .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
-                        .on('get', this.request.bind(this, this.soil_conductivity_id));
-                    services.push(this.lightSensor);
-                }
+            if (this.soil_conductivity_id) {
+                this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
+                this.lightSensor
+                    .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                    .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
+                    .on('get', this.request.bind(this, this.soil_conductivity_id));
+                services.push(this.lightSensor);
+            }
         }
 
-
-
- 
- 
-
-        
-        
-        
         return services;
     }
 };
