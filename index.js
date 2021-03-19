@@ -32,7 +32,8 @@ function get_plant_info(obj) {
                 if (body.data.basic.origin == "") {
                     obj.log('Plant not found: %s', plant_name);                    
                 } else {
-                    obj.temperature_max = parseFloat(body.data.parameter.max_temp);
+                    obj.log(parseFloat(body.data.parameter.max_temp))
+                    EsphomeMiFlowerCare.temperature_max = parseFloat(body.data.parameter.max_temp);
                     obj.temperature_min = parseFloat(body.data.parameter.min_temp);
                     obj.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
                     obj.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
