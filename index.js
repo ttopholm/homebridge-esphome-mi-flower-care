@@ -49,10 +49,12 @@ EsphomeMiFlowerCare.prototype = {
             }
         })();
     },
-    http_post_request: function (url,, body, callback) {
+    http_post_request: function (url, body, callback) {
         (async () => {
             try {
-                const response = await got(url);
+                const response = await got.post(url, {
+                    json: body
+                });
                 callback(null, response, response.body)
             } catch (error) {
                 callback(error, error.response, error.response.body)    
