@@ -7,53 +7,6 @@ module.exports = function (homebridge) {
     homebridge.registerAccessory("homebridge-esphome-mi-flower-care", "EsphomeMiFlowerCare", EsphomeMiFlowerCare);
 }
 
-function get_plant_info(obj) {
-        let url = "https://eu-api.huahuacaocao.net/api/v2";
-        json_body = {
-            "path":"/plant/detail",
-            "data": {
-                "lang":"en",
-                "pid": obj.plant_name.toLowerCase()
-            },
-            "method":"GET",
-            "service":"pkb"
-        }
-
-
-        try {
-            body = got.post(url, {
-                json: json_body,
-                responseType: "json",
-                headers: {"X-Hhcc-Region": "EU"}
-            }).then(response => {
-                body = response.body;
-                obj.log(body);
-
-                if (body.data.basic.origin == "") {
-                    obj.log('Plant not found: %s', plant_name);                    
-                } else {
-                    obj.log(parseFloat(body.data.parameter.max_temp))
-                    EsphomeMiFlowerCare.temperature_max = parseFloat(body.data.parameter.max_temp);
-                    obj.temperature_min = parseFloat(body.data.parameter.min_temp);
-                    obj.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
-                    obj.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
-                    obj.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
-                    obj.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
-                    obj.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
-                    obj.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
-                }
-            })
-            .catch(err => {
-                obj.log('Error: ', err.message);
-            });
-
-            
-
-        } catch (error) {
-            obj.log('Get plant_info failed: %s', error.message);
-        }
-
-}
 
 
 function EsphomeMiFlowerCare(log, config) {
@@ -87,7 +40,52 @@ function EsphomeMiFlowerCare(log, config) {
 }
 
 EsphomeMiFlowerCare.prototype = {
+    get_plant_info: function() {
+        let url = "https://eu-api.huahuacaocao.net/api/v2";
+        json_body = {
+            "path":"/plant/detail",
+            "data": {
+                "lang":"en",
+                "pid": this.plant_name.toLowerCase()
+            },
+            "method":"GET",
+            "service":"pkb"
+        }
 
+
+        try {
+            body = got.post(url, {
+                json: json_body,
+                responseType: "json",
+                headers: {"X-Hhcc-Region": "EU"}
+            }).then(response => {
+                body = response.body;
+                this.log(body);
+
+                if (body.data.basic.origin == "") {
+                    this.log('Plant not found: %s', plant_name);                    
+                } else {
+                    this.log(parseFloat(body.data.parameter.max_temp))
+                    this.temperature_max = parseFloat(body.data.parameter.max_temp);
+                    this.temperature_min = parseFloat(body.data.parameter.min_temp);
+                    this.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
+                    this.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
+                    this.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
+                    this.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
+                    this.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
+                    this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
+                }
+            })
+            .catch(err => {
+                this.log('Error: ', err.message);
+            });
+
+            
+
+        } catch (error) {
+            this.log('Get plant_info failed: %s', error.message);
+        }        
+    },
     http_get_request: function (url, callback) {
         (async () => {
             try {
@@ -128,11 +126,7 @@ EsphomeMiFlowerCare.prototype = {
     identify: function (callback) {
         this.log("Identify requested!");
         callback(); // success
-    },
-    get_dummy: function () {
-        this.log("Get dummy!");
-        get_plant_info(this);
-    },
+    }
     getServices: function () {
         var services = [],
             informationService = new Service.AccessoryInformation();
@@ -179,9 +173,7 @@ EsphomeMiFlowerCare.prototype = {
             services.push(this.lightSensor);
         }
 
-
-        //this.get_dummy.bind(this);
-        this.get_dummy(this);
+        this.get_plant_info();
         
         
         return services;
