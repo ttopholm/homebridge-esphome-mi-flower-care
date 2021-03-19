@@ -7,6 +7,46 @@ module.exports = function (homebridge) {
     homebridge.registerAccessory("homebridge-esphome-mi-flower-care", "EsphomeMiFlowerCare", EsphomeMiFlowerCare);
 }
 
+function get_plant_info(obj) {
+        let url = "https://eu-api.huahuacaocao.net/api/v2";
+        body = {
+            "path":"/plant/detail",
+            "data": {
+                "lang":"en",
+                "pid": obj.plant_name.toLowerCase()
+            },
+            "method":"GET",
+            "service":"pkb"
+        }
+
+        (async () => {
+            try {
+                const response = await got.post(url, {
+                    json: body
+                });
+                body = JSON.parse(response.body)
+
+                if (body.data.basic.origin == "") {
+                    obj.log('Plant not found: %s', plant_name);                    
+                } else {
+                    obj.temperature_max = parseFloat(body.data.parameter.max_temp);
+                    obj.temperature_min = parseFloat(body.data.parameter.min_temp);
+                    obj.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
+                    obj.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
+                    obj.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
+                    obj.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
+                    obj.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
+                    obj.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
+                }
+                
+
+            } catch (error) {
+                obj.log('Get plant_info failed: %s', error.message);
+            }
+        })();
+}
+
+
 function EsphomeMiFlowerCare(log, config) {
     this.log = log;
 
@@ -34,7 +74,8 @@ function EsphomeMiFlowerCare(log, config) {
     this.illuminance_min = config["illuminance_min"] || 0;
     this.soil_conductivity_max = config["soil_conductivity_max"] || 1000000;
     this.soil_conductivity_min = config["soil_conductivity_min"] || 0;
-
+    if (this.plant_name)
+        get_plant_info(this);
 }
 
 EsphomeMiFlowerCare.prototype = {
@@ -43,18 +84,6 @@ EsphomeMiFlowerCare.prototype = {
         (async () => {
             try {
                 const response = await got(url);
-                callback(null, response, response.body)
-            } catch (error) {
-                callback(error, error.response, error.response.body)    
-            }
-        })();
-    },
-    http_post_request: function (url, body, callback) {
-        (async () => {
-            try {
-                const response = await got.post(url, {
-                    json: body
-                });
                 callback(null, response, response.body)
             } catch (error) {
                 callback(error, error.response, error.response.body)    
@@ -88,41 +117,6 @@ EsphomeMiFlowerCare.prototype = {
             }
         }.bind(this));
     },
-    get_plant_info: function(callback) {
-        let url = "https://eu-api.huahuacaocao.net/api/v2";
-        body = {
-            "path":"/plant/detail",
-            "data": {
-                "lang":"en",
-                "pid": this.plant_name.toLowerCase()
-            },
-            "method":"GET",
-            "service":"pkb"
-        }
-        this.http_post_request(url, body, function (error, response, responseBody) {
-            if (error) {
-                this.log('Get plant info failed: %s', error.message);
-                callback(error);                
-            } else {
-                body = JSON.parse(responseBody)
-
-                if (body.data.basic.origin == "") {
-                this.log('Plant not found: %s', this.plant_name);
-                callback();                     
-                } else {
-                    this.temperature_max = parseFloat(body.data.parameter.max_temp);
-                    this.temperature_min = parseFloat(body.data.parameter.min_temp);
-                    this.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
-                    this.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
-                    this.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
-                    this.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
-                    this.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
-                    this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
-                }
-            }
-        });
-    },
-
     identify: function (callback) {
         this.log("Identify requested!");
         callback(); // success
@@ -137,8 +131,6 @@ EsphomeMiFlowerCare.prototype = {
             .setCharacteristic(Characteristic.Model, this.model)
             .setCharacteristic(Characteristic.SerialNumber, this.serial);
         services.push(informationService);
-        if (this.plant_name)
-            get_plant_info();
  
         if (this.temperature_id) {
             temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
