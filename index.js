@@ -22,22 +22,27 @@ function get_plant_info(obj) {
 
         try {
             body = got.post(url, {
-                json: json_body
-            }).json();
-            obj.log(body);
+                json: json_body,
+                responseType: "json",
 
-            if (body.data.basic.origin == "") {
-                obj.log('Plant not found: %s', plant_name);                    
-            } else {
-                obj.temperature_max = parseFloat(body.data.parameter.max_temp);
-                obj.temperature_min = parseFloat(body.data.parameter.min_temp);
-                obj.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
-                obj.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
-                obj.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
-                obj.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
-                obj.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
-                obj.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
-            }
+            }).then(response => {
+                body = response.body;
+                obj.log(body);
+
+                if (body.data.basic.origin == "") {
+                    obj.log('Plant not found: %s', plant_name);                    
+                } else {
+                    obj.temperature_max = parseFloat(body.data.parameter.max_temp);
+                    obj.temperature_min = parseFloat(body.data.parameter.min_temp);
+                    obj.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
+                    obj.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
+                    obj.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
+                    obj.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
+                    obj.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
+                    obj.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
+                }
+            })
+
             
 
         } catch (error) {
