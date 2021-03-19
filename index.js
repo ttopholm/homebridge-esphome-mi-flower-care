@@ -85,7 +85,7 @@ EsphomeMiFlowerCare.prototype = {
         } catch (error) {
             this.log('Get plant_info failed: %s', error.message);
         }     
-        callback();   
+        callback(this);   
     },
     http_get_request: function (url, callback) {
         (async () => {
@@ -140,8 +140,7 @@ EsphomeMiFlowerCare.prototype = {
 
 
         if (this.plant_name) {
-            var _this = this
-            this.get_plant_info(function() {
+            this.get_plant_info(function(_this) {
                 if (_this.temperature_id) {
                     temperatureService = new Service.TemperatureSensor(_this.name + "_temperature");
                     temperatureService
