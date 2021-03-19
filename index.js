@@ -131,6 +131,8 @@ EsphomeMiFlowerCare.prototype = {
         var services = [],
             informationService = new Service.AccessoryInformation();
 
+        this.get_plant_info();
+
         informationService
             .setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
             .setCharacteristic(Characteristic.Model, this.model)
@@ -173,7 +175,7 @@ EsphomeMiFlowerCare.prototype = {
             services.push(this.lightSensor);
         }
 
-        this.get_plant_info();
+        
         
         
         return services;
