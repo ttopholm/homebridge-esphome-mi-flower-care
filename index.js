@@ -24,7 +24,7 @@ function get_plant_info(obj) {
             body = got.post(url, {
                 json: json_body,
                 responseType: "json",
-
+                headers: {"X-Hhcc-Region": "EU"}
             }).then(response => {
                 body = response.body;
                 obj.log(body);
