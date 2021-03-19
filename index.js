@@ -9,7 +9,7 @@ module.exports = function (homebridge) {
 
 function get_plant_info(obj) {
         let url = "https://eu-api.huahuacaocao.net/api/v2";
-        body = {
+        json_body = {
             "path":"/plant/detail",
             "data": {
                 "lang":"en",
@@ -21,11 +21,10 @@ function get_plant_info(obj) {
 
 
         try {
-            const response = got.post(url, {
-                json: body
-            });
-            obj.log(response);
-            body = JSON.parse(response.body)
+            body = got.post(url, {
+                json: json_body
+            }).json();
+            obj.log(body);
 
             if (body.data.basic.origin == "") {
                 obj.log('Plant not found: %s', plant_name);                    
