@@ -59,13 +59,13 @@
 
   "accessories": [
     {
-      "accessory": "EsphomeMiFlowerCare"
+      "accessory": "EsphomeMiFlowerCare",
       "name": "Temperature",
       "url": "http://1.2.3.4",
       "temperature_id": "xiaomi_hhccjcy01_temperature",
       "moisture_id": "xiaomi_hhccjcy01_moisture",
       "illuminance_id": "xiaomi_hhccjcy01_illuminance",
-      "soil_conductivity_id": "xiaomi_hhccjcy01_soil_conductivity",
+      "soil_conductivity_id": "xiaomi_hhccjcy01_soil_conductivity"
     }
   ]
 }
