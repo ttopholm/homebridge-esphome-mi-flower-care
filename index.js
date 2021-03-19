@@ -42,6 +42,9 @@ function get_plant_info(obj) {
                     obj.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
                 }
             })
+            .catch(err => {
+                obj.log('Error: ', err.message);
+            });
 
             
 
