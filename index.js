@@ -83,8 +83,7 @@ function EsphomeMiFlowerCare(log, config) {
     this.illuminance_min = config["illuminance_min"] || 0;
     this.soil_conductivity_max = config["soil_conductivity_max"] || 1000000;
     this.soil_conductivity_min = config["soil_conductivity_min"] || 0;
-    if (this.plant_name)
-        get_plant_info(this);
+
 }
 
 EsphomeMiFlowerCare.prototype = {
@@ -130,8 +129,10 @@ EsphomeMiFlowerCare.prototype = {
         this.log("Identify requested!");
         callback(); // success
     },
-    get_dummy: function () {
+    get_dummy: function (callback) {
         this.log("Get dummy!");
+        get_plant_info(this);
+        callback(); // success
     },
     getServices: function () {
         var services = [],
@@ -180,7 +181,7 @@ EsphomeMiFlowerCare.prototype = {
         }
 
         if (this.plant_name)
-            this.get_dummy.bind();
+            this.get_dummy.bind(this);
                 
         
         return services;
