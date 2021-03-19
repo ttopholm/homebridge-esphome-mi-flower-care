@@ -24,6 +24,7 @@ function get_plant_info(obj) {
             const response = got.post(url, {
                 json: body
             });
+            obj.log(response);
             body = JSON.parse(response.body)
 
             if (body.data.basic.origin == "") {
