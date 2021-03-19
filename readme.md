@@ -9,18 +9,36 @@
 ## Configuration
 
 ### Parameters
-| parameter       | description                                                | default                 | required |
-|-----------------|------------------------------------------------------------|-------------------------|----------|
-| url             | The url to fetch temperature (and humidity)                | /                       | true     |
-| type            | Serial of the accessory                                    |                         | true     |
-| http_method     | The http method                                            | GET                     | false    |
-| sendimmediately | see https://github.com/request/request#http-authentication | false                   | false    |
-| username        | Username for http-authentication                           | /                       | false    |
-| password        | Password for http-authentication                           | /                       | false    |
-| name            | Name of the homekit accessory                              | /                       | true     |
-| manufacturer    | Name of the manufacturer of the accessory                  | HttpTemperatureHumidity | false    |
-| model           | Name of the model of the accessory                         | Default                 | false    |
-| serial          | Serial of the accessory                                    | 18981898                | false    |
+| parameter             | description                                                | default                 | required |
+|-----------------------|------------------------------------------------------------|-------------------------|----------|
+| name                  | Name of the homekit accessory                              |                         | true     |
+| url                   | The url to fetch temperature (and humidity)                |                         | true     |
+| temperature_id        | The id refers to the id of the component -                 |                         | false    |
+|                       | this ID is created by taking the name of the component,    |                         |          |
+|                       | stripping out all non-alphanumeric characters,             |                         |          |
+|                       | making everything lowercase and replacing all spaces by    |                         |          |
+|                       | underscores.                                               |                         |          |
+| temperature_id        | The id refers to the id of the component -                 |                         | false    |
+|                       | this ID is created by taking the name of the component,    |                         |          |
+|                       | stripping out all non-alphanumeric characters,             |                         |          |
+|                       | making everything lowercase and replacing all spaces by    |                         |          |
+|                       | underscores.                                               |                         |          |
+| moisture_id.          | The id refers to the id of the component -                 |                         | false    |
+|                       | this ID is created by taking the name of the component,    |                         |          |
+|                       | stripping out all non-alphanumeric characters,             |                         |          |
+|                       | making everything lowercase and replacing all spaces by    |                         |          |
+|                       | underscores.                                               |                         |          |
+| illuminance_id        | The id refers to the id of the component -                 |                         | false    |
+|                       | this ID is created by taking the name of the component,    |                         |          |
+|                       | stripping out all non-alphanumeric characters,             |                         |          |
+|                       | making everything lowercase and replacing all spaces by    |                         |          |
+|                       | underscores.                                               |                         |          |
+| soil_conductivity_id  | The id refers to the id of the component -                 |                         | false    |
+|                       | this ID is created by taking the name of the component,    |                         |          |
+|                       | stripping out all non-alphanumeric characters,             |                         |          |
+|                       | making everything lowercase and replacing all spaces by    |                         |          |
+|                       | underscores.                                               |                         |          |
+
 
 
 
@@ -41,10 +59,13 @@
 
   "accessories": [
     {
-      "accessory": "EsphomeMiFlowerCare",
+      "accessory": "EsphomeMiFlowerCare"
       "name": "Temperature",
-      "url": "http://192.168.178.210/sesnor/xiomi_sensor_temperature",
-      "type": "temperature"
+      "url": "http://1.2.3.4",
+      "temperature_id": "xiaomi_hhccjcy01_temperature",
+      "moisture_id": "xiaomi_hhccjcy01_moisture",
+      "illuminance_id": "xiaomi_hhccjcy01_illuminance",
+      "soil_conductivity_id": "xiaomi_hhccjcy01_soil_conductivity",
     }
   ]
 }
