@@ -126,7 +126,7 @@ EsphomeMiFlowerCare.prototype = {
     identify: function (callback) {
         this.log("Identify requested!");
         callback(); // success
-    }
+    },
     getServices: function () {
         var services = [],
             informationService = new Service.AccessoryInformation();
