@@ -217,7 +217,7 @@ EsphomeMiFlowerCare.prototype = {
                     .on('get', this.request.bind(this, this.soil_conductivity_id));
                 services.push(this.lightSensor);
             }
-            if (plant_name) {
+            if (this.plant_name) {
                 this.get_plant_info.bind(this);
             }
             return services;
