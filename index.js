@@ -218,7 +218,7 @@ EsphomeMiFlowerCare.prototype = {
                 services.push(this.lightSensor);
             }
             if (this.plant_name) {
-                this.get_plant_info.bind(this);
+                this.get_plant_info()
             }
             return services;
         //}
