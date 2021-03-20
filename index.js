@@ -139,7 +139,8 @@ EsphomeMiFlowerCare.prototype = {
 
 
         if (this.plant_name) {
-            this.get_plant_info(function(this) {
+            this.get_plant_info(function() {
+                this = EsphomeMiFlowerCare
                 this.log(this.temperature_max)
                 if (this.temperature_id) {
                     temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
