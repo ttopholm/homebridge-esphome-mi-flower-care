@@ -66,7 +66,9 @@ EsphomeMiFlowerCare.prototype = {
                     this.log('Plant not found: %s', plant_name);                    
                 } else {
                     if (this.temperatureService)
-                        this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature).setProps({minValue: parseFloat(body.data.parameter.min_temp)-0.5, maxValue: parseFloat(body.data.parameter.max_temp)+0.5})
+                        this.temperatureService
+                            .getCharacteristic(Characteristic.CurrentTemperature)
+                            .setProps({minValue: parseFloat(body.data.parameter.min_temp)-0.5, maxValue: parseFloat(body.data.parameter.max_temp)+0.5})
                     
                     if (this.humidityService)
                         this.humidityService
