@@ -140,7 +140,7 @@ EsphomeMiFlowerCare.prototype = {
             .setCharacteristic(Characteristic.SerialNumber, this.serial);
         services.push(informationService);
 
-
+        /*
         if (this.plant_name) {
             this.get_plant_info(function() {
                 this.log(this.temperature_max)
@@ -180,7 +180,7 @@ EsphomeMiFlowerCare.prototype = {
                     services.push(this.lightSensor);
                 }
             }.bind(this));
-        } else {
+        } else {*/
             if (this.temperature_id) {
                     temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
                     temperatureService
@@ -216,8 +216,9 @@ EsphomeMiFlowerCare.prototype = {
                     .on('get', this.request.bind(this, this.soil_conductivity_id));
                 services.push(this.lightSensor);
             }
-        }
+            return services;
+        //}
 
-        return services;
+        
     }
 };
