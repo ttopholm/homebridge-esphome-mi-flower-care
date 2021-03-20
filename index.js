@@ -70,14 +70,15 @@ EsphomeMiFlowerCare.prototype = {
             })
             .catch(err => {
                 this.log('Error: ', err.message);
+                callback();
             });
 
             
 
         } catch (error) {
             this.log('Get plant_info failed: %s', error.message);
-        }     
-        callback();   
+            callback();
+        }      
     },
     http_get_request: function (url, callback) {
         (async () => {
@@ -132,6 +133,7 @@ EsphomeMiFlowerCare.prototype = {
 
         if (this.plant_name) {
             this.get_plant_info(function(params) {
+                this.log(this.temperature_max)
                 if (this.temperature_id) {
                     temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
                     temperatureService
