@@ -65,20 +65,29 @@ EsphomeMiFlowerCare.prototype = {
                 if (body.data.basic.origin == "") {
                     this.log('Plant not found: %s', plant_name);                    
                 } else {
-                    callback(body.data.parameter);
+                    this.temperature_max = parseFloat(body.data.parameter.max_temp);
+                    this.temperature_min = parseFloat(body.data.parameter.min_temp);
+                    this.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
+                    this.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
+                    this.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
+                    this.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
+                    this.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
+                    this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
+                    callback(); 
                 }
             })
             .catch(err => {
                 this.log('Error: ', err.message);
-                callback();
+                callback(); 
             });
 
             
 
         } catch (error) {
             this.log('Get plant_info failed: %s', error.message);
-            callback();
-        }      
+            callback(); 
+        }     
+          
     },
     http_get_request: function (url, callback) {
         (async () => {
@@ -131,14 +140,15 @@ EsphomeMiFlowerCare.prototype = {
             .setCharacteristic(Characteristic.SerialNumber, this.serial);
         services.push(informationService);
 
+
         if (this.plant_name) {
-            this.get_plant_info(function(params) {
+            this.get_plant_info(function() {
                 this.log(this.temperature_max)
                 if (this.temperature_id) {
                     temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
                     temperatureService
                         .getCharacteristic(Characteristic.CurrentTemperature)
-                        .setProps({minValue: params.min_temp, maxValue: params.max_temp})
+                        .setProps({minValue: this.temperature_min, maxValue: this.temperature_max})
                         .on('get', this.request.bind(this, this.temperature_id));
                     services.push(temperatureService);
                 }
@@ -147,7 +157,7 @@ EsphomeMiFlowerCare.prototype = {
                     this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
                     this.humidityService
                         .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                        .setProps({minValue: params.min_soil_moist, maxValue: params.max_soil_moist})
+                        .setProps({minValue: this.moisture_min, maxValue: this.moisture_max})
                         .on('get', this.request.bind(this, this.moisture_id));
                     services.push(this.humidityService);
                 }
@@ -156,7 +166,7 @@ EsphomeMiFlowerCare.prototype = {
                     this.lightSensor = new Service.LightSensor(this.name + "_illuminance", this.name + "_illuminance");
                     this.lightSensor
                         .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                        .setProps({minValue: params.min_light_lux, maxValue: params.max_light_lux})
+                        .setProps({minValue: this.illuminance_min, maxValue: this.illuminance_max})
                         .on('get', this.request.bind(this, this.illuminance_id));
                     services.push(this.lightSensor);
                 }
@@ -165,7 +175,7 @@ EsphomeMiFlowerCare.prototype = {
                     this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
                     this.lightSensor
                         .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                        .setProps({minValue: params.min_soil_ec, maxValue: params.max_soil_ec})
+                        .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
                         .on('get', this.request.bind(this, this.soil_conductivity_id));
                     services.push(this.lightSensor);
                 }
