@@ -74,8 +74,9 @@ EsphomeMiFlowerCare.prototype = {
                     this.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
                     this.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
                     this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);*/
-                    this.temperatureService.setProps({minValue: parseFloat(body.data.parameter.min_temp), maxValue: parseFloat(body.data.parameter.max_temp)})
-
+                    this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature).setProps({minValue: parseFloat(body.data.parameter.min_temp), maxValue: parseFloat(body.data.parameter.max_temp)})
+                    this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature).props.minValue = parseFloat(body.data.parameter.min_temp);
+                    this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature).props.mmaxValue = parseFloat(body.data.parameter.max_temp);
                 }
             })
             .catch(err => {
