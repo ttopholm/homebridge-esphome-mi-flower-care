@@ -65,14 +65,16 @@ EsphomeMiFlowerCare.prototype = {
                 if (body.data.basic.origin == "") {
                     this.log('Plant not found: %s', plant_name);                    
                 } else {
-                    this.temperature_max = parseFloat(body.data.parameter.max_temp);
+
+                    /*this.temperature_max = parseFloat(body.data.parameter.max_temp);
                     this.temperature_min = parseFloat(body.data.parameter.min_temp);
                     this.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
                     this.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
                     this.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
                     this.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
                     this.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
-                    this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);
+                    this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);*/
+                    this.temperatureService.setProps({minValue: parseFloat(body.data.parameter.min_temp), maxValue: parseFloat(body.data.parameter.max_temp)})
                     callback(); 
                 }
             })
@@ -86,8 +88,7 @@ EsphomeMiFlowerCare.prototype = {
         } catch (error) {
             this.log('Get plant_info failed: %s', error.message);
             callback(); 
-        }     
-          
+        }  
     },
     http_get_request: function (url, callback) {
         (async () => {
@@ -215,6 +216,9 @@ EsphomeMiFlowerCare.prototype = {
                     .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
                     .on('get', this.request.bind(this, this.soil_conductivity_id));
                 services.push(this.lightSensor);
+            }
+            if (plant_name) {
+                this.get_plant_info.bind(this);
             }
             return services;
         //}
