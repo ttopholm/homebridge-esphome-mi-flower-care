@@ -75,19 +75,17 @@ EsphomeMiFlowerCare.prototype = {
                     this.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
                     this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);*/
                     this.temperatureService.setProps({minValue: parseFloat(body.data.parameter.min_temp), maxValue: parseFloat(body.data.parameter.max_temp)})
-                    callback(); 
+
                 }
             })
             .catch(err => {
                 this.log('Error: ', err.message);
-                callback(); 
             });
 
             
 
         } catch (error) {
             this.log('Get plant_info failed: %s', error.message);
-            callback(); 
         }  
     },
     http_get_request: function (url, callback) {
@@ -183,12 +181,12 @@ EsphomeMiFlowerCare.prototype = {
             }.bind(this));
         } else {*/
             if (this.temperature_id) {
-                    temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
-                    temperatureService
+                    this.temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
+                    this.temperatureService
                         .getCharacteristic(Characteristic.CurrentTemperature)
                         .setProps({minValue: this.temperature_min, maxValue: this.temperature_max})
                         .on('get', this.request.bind(this, this.temperature_id));
-                    services.push(temperatureService);
+                    services.push(this.temperatureService);
             }
 
             if (this.moisture_id) {
