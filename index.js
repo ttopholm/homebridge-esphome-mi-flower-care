@@ -65,25 +65,29 @@ EsphomeMiFlowerCare.prototype = {
                 if (body.data.basic.origin == "") {
                     this.log('Plant not found: %s', plant_name);                    
                 } else {
+                    if (this.temperatureService)
+                        this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature).setProps({minValue: parseFloat(body.data.parameter.min_temp)-0.5, maxValue: parseFloat(body.data.parameter.max_temp)+0.5})
+                    
+                    if (this.humidityService)
+                        this.humidityService
+                            .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                            .setProps({minValue: parseFloat(body.data.parameter.min_soil_moist)-1, maxValue: body.data.parameter.max_soil_moist}+1)
+                    
+                    if (this.lightSensor)
+                        this.lightSensor
+                            .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                            .setProps({minValue: parseFloat(body.data.parameter.min_light_lux)-1, maxValue: parseFloat(body.data.parameter.min_light_lux)+1})
 
-                    /*this.temperature_max = parseFloat(body.data.parameter.max_temp);
-                    this.temperature_min = parseFloat(body.data.parameter.min_temp);
-                    this.moisture_max = parseFloat(body.data.parameter.max_soil_moist);
-                    this.moisture_min = parseFloat(body.data.parameter.min_soil_moist);
-                    this.illuminance_max = parseFloat(body.data.parameter.max_light_lux);
-                    this.illuminance_min = parseFloat(body.data.parameter.min_light_lux);
-                    this.soil_conductivity_max = parseFloat(body.data.parameter.max_soil_ec);
-                    this.soil_conductivity_min = parseFloat(body.data.parameter.min_soil_ec);*/
-                    this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature).setProps({minValue: parseFloat(body.data.parameter.min_temp), maxValue: parseFloat(body.data.parameter.max_temp)})
-                    this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature).props.minValue = parseFloat(body.data.parameter.min_temp);
-                    this.temperatureService.getCharacteristic(Characteristic.CurrentTemperature).props.mmaxValue = parseFloat(body.data.parameter.max_temp);
+                    if (this.lightSensorSoil)
+                        this.lightSensorSoil
+                            .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                            .setProps({minValue: parseFloat(body.data.parameter.min_soil_ec)-1, maxValue: parseFloat(body.data.parameter.max_soil_ec)+1})
+
                 }
             })
             .catch(err => {
                 this.log('Error: ', err.message);
             });
-
-            
 
         } catch (error) {
             this.log('Get plant_info failed: %s', error.message);
@@ -140,88 +144,47 @@ EsphomeMiFlowerCare.prototype = {
             .setCharacteristic(Characteristic.SerialNumber, this.serial);
         services.push(informationService);
 
-        /*
+
+        if (this.temperature_id) {
+                this.temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
+                this.temperatureService
+                    .getCharacteristic(Characteristic.CurrentTemperature)
+                    .setProps({minValue: this.temperature_min, maxValue: this.temperature_max})
+                    .on('get', this.request.bind(this, this.temperature_id));
+                services.push(this.temperatureService);
+        }
+
+        if (this.moisture_id) {
+            this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
+            this.humidityService
+                .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                .setProps({minValue: this.moisture_min, maxValue: this.moisture_max})
+                .on('get', this.request.bind(this, this.moisture_id));
+            services.push(this.humidityService);
+        }
+
+        if (this.illuminance_id) {
+            this.lightSensor = new Service.LightSensor(this.name + "_illuminance");
+            this.lightSensor
+                .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                .setProps({minValue: this.illuminance_min, maxValue: this.illuminance_max})
+                .on('get', this.request.bind(this, this.illuminance_id));
+            services.push(this.lightSensor);
+        }
+
+        if (this.soil_conductivity_id) {
+            this.lightSensorSoil = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
+            this.lightSensorSoil
+                .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
+                .on('get', this.request.bind(this, this.soil_conductivity_id));
+            services.push(this.lightSensorSoil);
+        }
+
         if (this.plant_name) {
-            this.get_plant_info(function() {
-                this.log(this.temperature_max)
-                if (this.temperature_id) {
-                    temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
-                    temperatureService
-                        .getCharacteristic(Characteristic.CurrentTemperature)
-                        .setProps({minValue: this.temperature_min, maxValue: this.temperature_max})
-                        .on('get', this.request.bind(this, this.temperature_id));
-                    services.push(temperatureService);
-                }
-
-                if (this.moisture_id) {
-                    this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
-                    this.humidityService
-                        .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                        .setProps({minValue: this.moisture_min, maxValue: this.moisture_max})
-                        .on('get', this.request.bind(this, this.moisture_id));
-                    services.push(this.humidityService);
-                }
-
-                if (this.illuminance_id) {
-                    this.lightSensor = new Service.LightSensor(this.name + "_illuminance", this.name + "_illuminance");
-                    this.lightSensor
-                        .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                        .setProps({minValue: this.illuminance_min, maxValue: this.illuminance_max})
-                        .on('get', this.request.bind(this, this.illuminance_id));
-                    services.push(this.lightSensor);
-                }
-
-                if (this.soil_conductivity_id) {
-                    this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
-                    this.lightSensor
-                        .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                        .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
-                        .on('get', this.request.bind(this, this.soil_conductivity_id));
-                    services.push(this.lightSensor);
-                }
-            }.bind(this));
-        } else {*/
-            if (this.temperature_id) {
-                    this.temperatureService = new Service.TemperatureSensor(this.name + "_temperature");
-                    this.temperatureService
-                        .getCharacteristic(Characteristic.CurrentTemperature)
-                        .setProps({minValue: this.temperature_min, maxValue: this.temperature_max})
-                        .on('get', this.request.bind(this, this.temperature_id));
-                    services.push(this.temperatureService);
-            }
-
-            if (this.moisture_id) {
-                this.humidityService = new Service.HumiditySensor(this.name + "_humidity");
-                this.humidityService
-                    .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-                    .setProps({minValue: this.moisture_min, maxValue: this.moisture_max})
-                    .on('get', this.request.bind(this, this.moisture_id));
-                services.push(this.humidityService);
-            }
-
-            if (this.illuminance_id) {
-                this.lightSensor = new Service.LightSensor(this.name + "_illuminance");
-                this.lightSensor
-                    .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                    .setProps({minValue: this.illuminance_min, maxValue: this.illuminance_max})
-                    .on('get', this.request.bind(this, this.illuminance_id));
-                services.push(this.lightSensor);
-            }
-
-            if (this.soil_conductivity_id) {
-                this.lightSensor = new Service.LightSensor(this.name + "_soil_conductivity",this.name + "_soil_conductivity");
-                this.lightSensor
-                    .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
-                    .setProps({minValue: this.soil_conductivity_min, maxValue: this.soil_conductivity_max})
-                    .on('get', this.request.bind(this, this.soil_conductivity_id));
-                services.push(this.lightSensor);
-            }
-            if (this.plant_name) {
-                this.get_plant_info()
-            }
-            return services;
-        //}
-
+            this.get_plant_info()
+        }
+        return services;
         
     }
 };
